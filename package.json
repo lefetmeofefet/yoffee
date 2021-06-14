@@ -1,0 +1,47 @@
+{
+  "name": "htmel",
+  "version": "1.2.1",
+  "description": "Minimal HTML one-way binding library",
+  "module": "./src/htmel.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha -r jsdom-global/register",
+    "build": "node webpack.config.js",
+    "upload": "npm publish --access=public"
+  },
+  "author": {
+    "name": "Davdavdavdavit",
+    "email": "davidgdalevich7@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "Harambe",
+      "email": "davidgdalevich7@gmail.com",
+      "url": "http://harambism.ca/"
+    }
+  ],
+  "bugs": {
+    "email": "davidgdalevich7@gmail.com",
+    "url": "https://github.com/lefetmeofefet/htmel/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lefetmeofefet/htmel"
+  },
+  "license": "MIT license",
+  "keywords": [
+    "html",
+    "template",
+    "frontend",
+    "rendering"
+  ],
+  "devDependencies": {
+    "jsdom": "16.2.2",
+    "jsdom-global": "3.0.2",
+    "mocha": "^7.1.1",
+    "terser-webpack-plugin": "^2.3.5",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-shell-plugin": "^0.5.0"
+  }
+}

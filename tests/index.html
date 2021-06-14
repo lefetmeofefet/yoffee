@@ -1,0 +1,144 @@
+<style>
+    body {
+        background-color: #202020;
+        color: #bbbbbb;
+    }
+</style>
+<script type="module">
+    import htmel from "../src/htmel.js"
+    // import htmel from "../dist/htmel.min.js"
+
+    // window.state = {
+    //     a: 1,
+    //     // items: [
+    //     //     {a: "a"},
+    //     //     // {a: "b"},
+    //     //     // {a: "c"},
+    //     // ]
+    //     items: ["a", "b", "c"]
+    // }
+    //
+    // window.state2 = {
+    //     a: 1
+    // }
+    //
+    // let element = htmel(state, state2)`
+    // <div>
+    //     ${() => {
+    //         console.log("outer renderrrr: ", state.a);
+    //         // console.log("outer renderrrr");
+    //         window.createInner = name => htmel()`
+    //             <div>${() => {
+    //             console.log("inner renderrrr ", name);
+    //             // return state.a + " : " + name
+    //             // if (state.a !== 3) {
+    //             //     state.a = 3
+    //             // }
+    //             return "state = " + state.a + ", state2 = " + state2.a + " : " + name
+    //         }}</div>
+    //         `
+    //         // window.inner1 = createInner("inner 1");
+    //         // window.inner2 = createInner("inner 2");
+    //         // window.inner3 = createInner("inner 3");
+    //         //
+    //         // return [
+    //         //     inner1,
+    //         //     inner2,
+    //         //     inner3
+    //         // ]
+    //
+    //         return createInner("inner")
+    //
+    //         // return state.items.map(item => htmel()`<div>${() => item}</div>`)
+    //
+    //         // return state.items.map((item, index) => item.a ? htmel(item, state2)`
+    //         //     <div>${() => {
+    //         //     console.log("inner renderrrr ", index);
+    //         //     // return state.a + " : " + name
+    //         //     // if (state.a !== 3) {
+    //         //     //     state.a = 3
+    //         //     // }
+    //         //     return index + " : " + item.a + " : state = " + state.a + ", state2 = " + state2.a
+    //         // }}</div>` : item
+    //         // )
+    //     }}
+    // </div>
+    // `;
+
+    // let element = htmel(state)`
+    // <div>
+    //     ${() => {
+    //     console.log("outer renderrrr: ", state.a);
+    //     // console.log("outer renderrrr");
+    //
+    //     return htmel(state2)
+    //         `
+    //         <div>
+    //         ${() => {
+    //             console.log("inner renderrrr");
+    //             // return 1
+    //             return state.a + state2.a
+    //             // return state2.a
+    //         }}
+    //         </div>
+    //         `
+    // }}
+    // </div>
+    // `;
+
+    // window.state = {
+    //     a: 3
+    // }
+    //
+    // window.outer = 0;
+    // window.inner = 0;
+    // let element = htmel(state)`<div>
+    // ${() => {
+    //     console.log("Outer")
+    //     outer += 1;
+    //     // Just to access state.a to trigger rerender
+    //     let b = state.a;
+    //     return htmel()`
+    //         ${() => {
+    //             inner += 1;
+    //             console.log("Inner")
+    //             return state.a
+    //         }}
+    //     `;
+    // }}
+    // </div>`
+
+
+    // window.state = {
+    //     a: [1,2]
+    // }
+    // let element = htmel(state)`
+    // <div>
+    //     ${() => state.a.map(item => {
+    //         if (item % 2 === 0) {
+    //             return htmel()`<div>${() => item}</div>`
+    //         } else {
+    //             return item
+    //         }
+    //     })}
+    // </div>
+    // `
+
+    window.state = {
+        fek: 1,
+        items: ["A", "b", "c"]
+    }
+
+    let element = htmel(state)`
+    <div>
+        ${() => state.fek}
+        ${() => state.items}
+        2
+    </div>
+    `
+
+    // element is a regular html element
+    document.body.appendChild(element);
+
+
+</script>

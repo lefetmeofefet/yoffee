@@ -1,0 +1,58 @@
+<script type="module">
+    // import htmel from "../src/htmel.js"
+    import htmel from "../dist/htmel.min.js"
+
+    window.state = {
+        name: "Inigo Montoystory",
+        color: "red",
+        age: 3,
+        clicks: 1,
+        placeholder: "this is hint",
+        amAlive: true
+    };
+    window.innerState = {
+        deathColor: "blue"
+    };
+    window.secondState = {
+        age: 10
+    }
+
+    let element = htmel(state, secondState)`
+<div>
+    My name is <span style="color: ${() => state.color}">
+        ${() => state.name}
+    </span>
+
+    <div>i will live ${() => state.age + 1}ever</div>
+    <div>second state age is  ${() => secondState.age} yars</div>
+    <div>i am ${"static"}</div>
+
+    <button onclick=${() => state.clicks += 1}>
+        click me baby ${() => state.clicks} more time
+    </button>
+
+    <style>
+     #thing {
+        color: ${() => state.color};
+     }
+    </style>
+    <div id="thing">colorful things</div>
+
+    <input placeholder=${() => state.placeholder}>
+
+    <div>
+        ${() => state.amAlive ? "yes" : htmel(innerState)`
+            <span style="color: ${() => innerState.deathColor}; font-size: ${() => innerState.deathColor === "blue" ? "40px" : "13px"};">NO</span>`}
+    </div>
+</div>
+`;
+
+    // element is a regular html element
+    document.body.appendChild(element);
+
+    // modifying the state
+    state.name = "John Cena!!!";
+
+    // switching the color
+    setInterval(() => state.color = state.color === "blue" ? "red" : "blue", 500);
+</script>

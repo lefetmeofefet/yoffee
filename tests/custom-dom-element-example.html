@@ -1,0 +1,29 @@
+<style>
+    body {
+        background-color: #202020;
+        color: #bbbbbb;
+    }
+</style>
+<script type="module">
+    import {HTMElement} from "../src/htmel.js"
+
+    // customElements.define("my-shit",
+    class FAKAKAKA extends HTMElement {
+        constructor() {
+            super({
+                clicks: 0
+            })
+        }
+
+        render() {
+            console.log("Renderinging")
+            return this.html(this.state)`
+            <button onclick=${() => this.state.clicks += 1}>
+                click me for the ${() => this.state.clicks}th time.
+            </button>
+            `
+        }
+    }
+    // )
+</script>
+<my-shit></my-shit>

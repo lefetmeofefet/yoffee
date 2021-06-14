@@ -1,0 +1,93 @@
+<body>
+<script type="module">
+    // import htmel, {htmels} from "../dist/htmel.min.js"
+    import htmel from "../src/htmel.js"
+
+    // 30 lines to achieve React-like behaviour, while using web standards:
+    // CustomElements, ShadowRoot, MutationObserver, Attributes.
+
+    class HtmElement extends HTMLElement {
+        constructor(state) {
+            super();
+            // Props and state, like in React
+            this.state = state || {};
+            this.props = {};
+
+            const updateProp = attr => {
+                this.props[attr] = (this[attr] === undefined ? this.getAttribute(attr) : this[attr])
+            }
+
+            // Put current attributes into props
+            [...this.attributes].forEach(attr => updateProp(attr.name))
+
+            // Observe the custom element for attribute changes using MutationObserver, and update the props
+            const addProp = mutationsList => mutationsList.forEach(mutation => updateProp(mutation.attributeName));
+            new MutationObserver(addProp).observe(this, {attributes: true});
+
+            // Add shadow DOM
+            this.attachShadow({mode: 'open'});
+
+            // Create template and append to custom element
+            this.shadowRoot.appendChild(this.render());
+        }
+
+        get html() {
+            return htmel(this.props, this.state)
+        }
+    }
+
+    // Define custom element
+    customElements.define("my-list-item", class extends HtmElement {
+        render() {
+            console.log("Renderinging")
+            return this.html`
+            <button onclick=${() => this.props._on_click()}>
+                click me for the ${() => this.props.clicks}th time.
+            </button>
+            `
+        }
+    })
+
+    // Define another custom element
+    customElements.define("my-custom-element", class extends HtmElement {
+        constructor() {
+            // Send state to parent
+            super({
+                items: [
+                    {clicks: 0},
+                    {clicks: 0}
+                ],
+                margin: 20
+            })
+        }
+
+        render() {
+            return this.html`
+                <style>
+                    :host {
+                        display: block;
+                        margin: ${() => this.state.margin}px;
+                    }
+                </style>
+                <div>
+                    ${() => this.state.items.map(item => {
+                        console.log("Funk");
+                        let out = htmel(item)`
+                        <my-list-item
+                            clicks="${() => item.clicks}"
+                            _on_click=${() => () => item.clicks += 1}
+                            data=${() => item.data}></my-list-item>
+                    `;
+                        console.log("Funk2")
+                return out;
+                    })}
+                </div>
+                <button onclick=${() => this.state.items = [...this.state.items, {clicks: 0}]}>
+                    add a button
+                </button>
+            `
+        }
+    });
+</script>
+<my-custom-element></my-custom-element>
+</body>
