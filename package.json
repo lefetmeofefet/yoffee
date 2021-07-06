@@ -1,8 +1,8 @@
 {
-  "name": "htmel",
+  "name": "yoffee",
   "version": "1.2.1",
   "description": "Minimal HTML one-way binding library",
-  "module": "./src/htmel.js",
+  "module": "src/yoffee.js",
   "type": "module",
   "scripts": {
     "test": "mocha -r jsdom-global/register",
@@ -22,18 +22,20 @@
   ],
   "bugs": {
     "email": "davidgdalevich7@gmail.com",
-    "url": "https://github.com/lefetmeofefet/htmel/issues"
+    "url": "https://github.com/lefetmeofefet/yoffee/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lefetmeofefet/htmel"
+    "url": "https://github.com/lefetmeofefet/yoffee"
   },
   "license": "MIT license",
   "keywords": [
     "html",
     "template",
     "frontend",
-    "rendering"
+    "rendering",
+    "yoffee",
+    "web components"
   ],
   "devDependencies": {
     "jsdom": "16.2.2",

@@ -1,4 +1,4 @@
-import HTMElement from "./htmlelement.js"
+import {YoffeeElement, createYoffeeElement} from "./YoffeeElement.js"
 import {watch, removeWatcher, NoWatchProperty} from "./objectWatcher.js"
 import {find, SearchLocations} from "./domNodeFinder.js"
 import {randomId, fillStrWithExpressions} from "./utils.js";
@@ -13,9 +13,9 @@ function _joinTemplateStrings(arr1, arr2) {
  * Creates an HTML element from html string.
  * We use template tag, because it doesn't render its content. The `content` property of the template element is a
  * DocumentFragment that contains all the elements under that template.
- * The reason we create an enclosing <htmel-template-container> element and don't return the DocumentFragment directly,
+ * The reason we create an enclosing <yoffee-template-container> element and don't return the DocumentFragment directly,
  * is that document.evaluate can't run on a DocumentFragment, only on an element. So we enclose the template's content
- * with <htmel-template-container>, and return that.
+ * with <yoffee-template-container>, and return that.
  * @param {String} html
  * @returns {Element}
  * @private
@@ -23,9 +23,9 @@ function _joinTemplateStrings(arr1, arr2) {
 function _createContainerElement(html) {
     let template = document.createElement("template");
 
-    // htmel-template-container doesn't exist, I made it up. It is an HTMLUnknownElement:
+    // yoffee-template-container doesn't exist, I made it up. It is an HTMLUnknownElement:
     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLUnknownElement
-    template.innerHTML = `<htmel-template-container>${html.trim()}</htmel-template-container>`;
+    template.innerHTML = `<yoffee-template-container>${html.trim()}</yoffee-template-container>`;
     let containerElement = template.content.firstElementChild;
 
     // Firefox can't use document.evaluate on a node that's not under the document
@@ -90,7 +90,7 @@ function bindNodesToExpressions(containerElement, expressions) {
         searchResult = find(containerElement, expression.id);
 
         if (searchResult == null) {
-            throw `HTMEL: Expression location is not valid: ${"${" + expression._cb.toString() + "}"}`
+            throw `YOFFEE: Expression location is not valid: ${"${" + expression._cb.toString() + "}"}`
         }
         let {domNode, searchLocation} = searchResult;
 
@@ -102,7 +102,7 @@ function bindNodesToExpressions(containerElement, expressions) {
         // If template is inside html tag name, throw exception
         if (searchLocation === SearchLocations.HTML_TAG) {
             let forbiddenTagText = fillStrWithExpressions(`<${domNode.localName}>`, [expression]);
-            throw `HTMEL: Calculating element name is not allowed: ${forbiddenTagText}`
+            throw `YOFFEE: Calculating element name is not allowed: ${forbiddenTagText}`
         }
 
         // Expressions on attrs that start with "on" are event handlers
@@ -200,7 +200,7 @@ let onGetListener = (key, obj) => {
  */
 let onSetListener = (key, value, obj) => {
     if (isInsideExpression) {
-        throw `HTMEL: Setting properties is not allowed inside an expression! (${key} = ${value})`
+        throw `YOFFEE: Setting properties is not allowed inside an expression! (${key} = ${value})`
     }
 
     // TODO: Check if value is different than the current one, and spare expression evaluations
@@ -215,7 +215,7 @@ let onSetListener = (key, value, obj) => {
     // Collect expressions to execute (expressions that have props that were modified)
     let expressionsToExecute = propsToExpressions.get(currentlySetProp);
     if (expressionsToExecute == null) {
-        // TODO: Consider removing this warning. if one object has many htmels it will happen annoyingly.
+        // TODO: Consider removing this warning. if one object has many yoffee elements it will happen annoyingly.
         console.warn(`A prop changed but no expression is linked to it: ${
             currentlySetProp.substr(currentlySetProp.indexOf(".") + 1)}`);
         return;
@@ -269,19 +269,19 @@ const updateExpressions = (exs, startRenderMidTree) => {
 };
 
 /**
- * Receives props objects, template strings and expressions callbacks inside the template, and returns a template that's bound
+ * Receives state objects, template strings and expression callbacks inside the template, and returns a template that's bound
  * to the props objects.
  *
  * Steps:
- *  1. Create a DocumentFragment that will represent the htmel template (contain elements, reference listeners, etc.)
- *  2. Create HTML string: generate ID for each expression and replace the expressions in the template with those IDs.
- *  3. Create a HTMLUnknownElement element that contains the previously created HTML string, not connected to the DOM.
- *  4. Bind nodes to expressions: find each expression in the dom and its corresponding node.
- *      We need the HTMLUnknownElement to search because xpath root has to be an Element (not DocumentFragment)
- *  5. Perform first render: execute each expression while collecting its used properties, and insert the return value
- *      into the element where the expression ID was. When setter is invoked, we check whether the property is bound
- *      to any expression, and if so, the expression is executed and node updated, and new properties are collected on the way.
- *  6. Move all children of the container element into the DocumentFragment, and return the fragment.
+ * 1. Create a DocumentFragment that will represent the yoffee template (it will contain elements, reference listeners, etc.)
+ * 2. Create HTML string from the template literal: generate an ID for each expression and replace the expressions in the template with those IDs.
+ * 3. Create a HTMLUnknownElement element that contains the previously generated HTML string. It's not connected to the DOM.
+ * 4. Bind nodes to expressions: find the DOM nodes that contain the expressions in the HTMLUnknownElement DOM using the previously generated IDs.
+ *    We need the HTMLUnknownElement to search because xpath root has to be an Element (not DocumentFragment)
+ * 5. Perform first render: execute each expression while collecting the state object's properties that were accesed inside, and insert the return value
+ *    into the DOM Node where the expression ID was. When the state object's setter is invoked, we check whether the property is bound
+ *    to any expression, and if so, the expression is executed and DOM Node is updated, and new properties are collected on the way again.
+ * 6. Move all children of the container element into the DocumentFragment created earlier, and return the fragment.
  *
  *  When executing an expression, we know which props were used in the expression thanks to the watchers we set earlier.
  *
@@ -292,22 +292,20 @@ const updateExpressions = (exs, startRenderMidTree) => {
  */
 function createBoundDocumentFragment(propsObjects, strings, expressionCbs) {
     // Create the fragment that will be returned, which contains the template
-    let htmelFragment = document.createDocumentFragment();
-    htmelFragment.__isHtmel = true;
+    let yoffeeFragment = document.createDocumentFragment();
 
-    // Create expressions and htmel element
+    yoffeeFragment.__isYoffee = true;
+
+    // Create expressions and yoffee element
     const expressions = expressionCbs.map(cb => new Expression(cb));
-
-    // TODO: Move this into expression...
-    expressions.forEach(e => e.boundProps = new Set());
-
-    const containerElement = _createContainerElement(_joinTemplateStrings(strings, expressions.map(e => e.id)));
+    let htmlText = _joinTemplateStrings(strings, expressions.map(e => e.id));
+    const containerElement = _createContainerElement(htmlText);
 
     // After this, each expression will reference a single BoundNode, which references multiple expressions.
     bindNodesToExpressions(containerElement, expressions);
 
     // This is called when the template is replaced with something else
-    htmelFragment.__removeWatchers = () => {
+    yoffeeFragment.__removeWatchers = () => {
         console.log("Deleting template");
 
         for (let expression of expressions) {
@@ -319,27 +317,27 @@ function createBoundDocumentFragment(propsObjects, strings, expressionCbs) {
     // Initial render
     updateExpressions(expressions);
 
-    // Add nodes into htmel fragment
-    htmelFragment.__childNodes = [...containerElement.childNodes]
-    htmelFragment.__expressions = expressions;
-    htmelFragment.__updateExpressions = () => updateExpressions(expressions.filter(ex => !ex.isStatic))
-    htmelFragment.append(...containerElement.childNodes);
-    return htmelFragment
+    // Add nodes into yoffee fragment
+    yoffeeFragment.__childNodes = [...containerElement.childNodes]
+    yoffeeFragment.__expressions = expressions;
+    yoffeeFragment.__updateExpressions = () => updateExpressions(expressions.filter(ex => !ex.isStatic))
+    yoffeeFragment.append(...containerElement.childNodes);
+    return yoffeeFragment
 }
 
 /**
  * Returns a DocumentFragment that has a one-way binding to each of the objects.
- * @param {...Object} propsObjects Holds the state of this htmel element
+ * @param {...Object} propsObjects Holds the state of this yoffee element
  * @returns {function(*=, ...[*]): DocumentFragment}
  */
-function htmel(...propsObjects) {
+function html(...propsObjects) {
     // Set ID for new props objects, and add watcher to prop object
     propsObjects.forEach(obj => {
         if (typeof obj !== "object") {
-            throw `HTMEL: Props object must be an object, got ${typeof propsObject}`
+            throw `YOFFEE: Props object must be an object, got ${typeof propsObject}`
         }
         else if (obj == null) {
-            throw `HTMEL: Props object can't be null`
+            throw `YOFFEE: Props object can't be null`
         }
 
         if (obj[NoWatchProperty] == null) {
@@ -356,7 +354,7 @@ function htmel(...propsObjects) {
     return (strings, ...expressionCbs) => {
         let createTemplate = () => createBoundDocumentFragment(propsObjects, strings, expressionCbs);
 
-        // If we're inside another htmel template, we don't create the htmel because it's possible it should be cached.
+        // If we're inside another yoffee template, we don't create a new template because it's possible it should be cached.
         // Instead, we return callback to create the template, and info to determine if should be cached (hash, expressions, propsObjects)
         if (isInsideExpression) {
             let deferredTemplate = {
@@ -365,9 +363,9 @@ function htmel(...propsObjects) {
                 hash: hashTemplate(strings, expressionCbs),
                 cacheable: false,
             }
-            deferredTemplate.createHtmelTemplate = () => {
+            deferredTemplate.createYoffeeTemplate = () => {
                 let t = createTemplate();
-                deferredTemplate.htmelTemplate = t;
+                deferredTemplate.yoffeeTemplate = t;
                 return t
             }
             return deferredTemplate
@@ -377,5 +375,5 @@ function htmel(...propsObjects) {
     }
 }
 
-export default htmel
-export {HTMElement}
+
+export {html, createYoffeeElement, YoffeeElement}

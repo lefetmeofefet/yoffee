@@ -6,30 +6,30 @@
  */
 
 
-import {HtmelChecker} from "./HtmelChecker.js";
-// import htmel from "../src/htmel-tree/htmel.js";
-import htmel from "../src/htmel.js";
-// import htmel from "../dist/htmel.min.js"
+import {YoffeeChecker} from "./YoffeeChecker.js";
+// import html from "../src/html-tree/html.js";
+import {html} from "../src/yoffee.js";
+// import html from "../dist/html.min.js"
 
 import assert from 'assert';
 
 describe('text node', function () {
     it('static rendering', function (done) {
-        let check = HtmelChecker(null, [
+        let check = YoffeeChecker(null, [
             {
-                template: () => htmel()`${"123"}`,
+                template: () => html()`${"123"}`,
                 expected: () => `123`
             }, {
-                template: () => htmel()`0${"123"}4`,
+                template: () => html()`0${"123"}4`,
                 expected: () => `01234`
             }, {
-                template: () => htmel()`  0 ${"123"} 4      `,
+                template: () => html()`  0 ${"123"} 4      `,
                 expected: () => `0 123 4`
             }, {
-                template: () => htmel()`${"123"}4${567}`,
+                template: () => html()`${"123"}4${567}`,
                 expected: () => `1234567`
             }, {
-                template: () => htmel()`<div>${"text"}</div>`,
+                template: () => html()`<div>${"text"}</div>`,
                 expected: () => `<div>text</div>`
             }
         ]);
@@ -45,24 +45,24 @@ describe('text node', function () {
         let ELEMENT_CONST = "element";
         let elementStr = `<div>funshit</div>`;
 
-        let calcA = () => state.a === ELEMENT_CONST ? htmel()`<div>funshit</div>` : state.a
+        let calcA = () => state.a === ELEMENT_CONST ? html()`<div>funshit</div>` : state.a
         let expectA = () => state.a === ELEMENT_CONST ? elementStr : (state.a || "")
 
-        let check = HtmelChecker(state, [
+        let check = YoffeeChecker(state, [
             {
-                template: () => htmel(state)`${() => calcA()}`,
+                template: () => html(state)`${() => calcA()}`,
                 expected: () => `${expectA()}`
             }, {
-                template: () => htmel(state)`0${() => calcA()}4`,
+                template: () => html(state)`0${() => calcA()}4`,
                 expected: () => `0${expectA()}4`
             }, {
-                template: () => htmel(state)`  0 ${() => calcA()} 4      `,
+                template: () => html(state)`  0 ${() => calcA()} 4      `,
                 expected: () => `0 ${expectA()} 4`
             }, {
-                template: () => htmel(state)`${() => calcA()}4${() => calcA()}`,
+                template: () => html(state)`${() => calcA()}4${() => calcA()}`,
                 expected: () => `${expectA()}4${expectA()}`
             }, {
-                template: () => htmel(state)`<div>${() => calcA()}</div>`,
+                template: () => html(state)`<div>${() => calcA()}</div>`,
                 expected: () => `<div>${expectA()}</div>`
             }
         ]);
@@ -97,7 +97,7 @@ describe('text node', function () {
         let state = {
             value: null
         }
-        let LIST_MARKER = "<htmel-list-location-marker></htmel-list-location-marker>";
+        let LIST_MARKER = "<yoffee-list-location-marker></yoffee-list-location-marker>";
         let expected = "";
 
         let transformations = {
@@ -120,19 +120,19 @@ describe('text node', function () {
                 expected = "shitfuck";
             },
             DOCUMENT_FRAGMENT_NO_CHILDREN: () => {
-                state.value = htmel()``;
+                state.value = html()``;
                 expected = "";
             },
             DOCUMENT_FRAGMENT_ONE_CHILD: () => {
-                state.value = htmel()`<div>asd</div>`;
+                state.value = html()`<div>asd</div>`;
                 expected = "<div>asd</div>";
             },
             DOCUMENT_FRAGMENT_MANY_CHILDREN: () => {
-                state.value = htmel()`<div>asd</div> asd2 ${null}${"asd_node"}<div>asd3</div>`;
+                state.value = html()`<div>asd</div> asd2 ${null}${"asd_node"}<div>asd3</div>`;
                 expected = `<div>asd</div> asd2 asd_node<div>asd3</div>${LIST_MARKER}`;
             },
             DOCUMENT_FRAGMENT_TEXT_NODE_CHILD: () => {
-                state.value = htmel()`asd`;
+                state.value = html()`asd`;
                 expected = "asd";
             },
             EMPTY_ARRAY: () => {
@@ -150,7 +150,7 @@ describe('text node', function () {
                 expected = `<div>lefet</div>beef${LIST_MARKER}`;
             },
             DOCUMENT_FRAGMENT_ARRAY: () => {
-                state.value = [htmel()`<div>asd</div>`, htmel()`asd2`, htmel()`<div>asd3</div>asd4`];
+                state.value = [html()`<div>asd</div>`, html()`asd2`, html()`<div>asd3</div>asd4`];
                 expected = `<div>asd</div>asd2<div>asd3</div>asd4${LIST_MARKER}`;
             },
             MIXED_ARRAY: () => {
@@ -158,13 +158,13 @@ describe('text node', function () {
                 e.textContent = "element";
 
                 state.value = [
-                    htmel()`<div>asd</div>`,
+                    html()`<div>asd</div>`,
                     document.createTextNode("textnode"),
-                    htmel()`asd2`,
+                    html()`asd2`,
                     e,
                     "strstr",
                     null,
-                    htmel()`<div>asd3</div>asd4`
+                    html()`<div>asd3</div>asd4`
                 ];
                 expected =
                     `<div>asd</div>`
@@ -177,9 +177,9 @@ describe('text node', function () {
             },
         }
 
-        let check = HtmelChecker(state, [
+        let check = YoffeeChecker(state, [
             {
-                template: () => htmel(state)`${() => state.value}`,
+                template: () => html(state)`${() => state.value}`,
                 expected: () => expected
             }
         ]);
@@ -207,13 +207,13 @@ describe('text node', function () {
                 a: "some value"
             }
 
-            let check = HtmelChecker(state, [
+            let check = YoffeeChecker(state, [
                 {
-                    template: () => htmel(state)`
+                    template: () => html(state)`
                     <div>
                     ${() => {
                         outerRenders += 1;
-                        return htmel()`
+                        return html()`
                         ${() => {
                             innerRenders += 1;
                             return state.a
@@ -249,16 +249,16 @@ describe('text node', function () {
                 a: "some value"
             }
 
-            let check = HtmelChecker(state, [
+            let check = YoffeeChecker(state, [
                 {
-                    template: () => htmel(state)`
+                    template: () => html(state)`
                     <div>
                     ${() => {
                         outerOuterRenders += 1;
-                        return htmel()`
+                        return html()`
                         ${() => {
                             outerRenders += 1;
-                            return htmel(state)`
+                            return html(state)`
                             ${() => {
                                 innerRenders += 1;
                                 return state.a
@@ -298,15 +298,15 @@ describe('text node', function () {
                 a: "some value"
             }
 
-            let check = HtmelChecker(state, [
+            let check = YoffeeChecker(state, [
                 {
-                    template: () => htmel(state)`
+                    template: () => html(state)`
                     <div>
                     ${() => {
                         outerRenders += 1;
                         // Just to access state.a to trigger rerender
                         let b = state.a;
-                        return htmel()`
+                        return html()`
                         ${() => {
                             innerRenders += 1;
                             return state.a
@@ -342,15 +342,15 @@ describe('text node', function () {
                 a: "some value"
             }
 
-            let check = HtmelChecker(state, [
+            let check = YoffeeChecker(state, [
                 {
-                    template: () => htmel(state)`
+                    template: () => html(state)`
                     <div>
                     ${() => {
                         outerRenders += 1;
                         // Just to access state.a to trigger rerender
                         let b = state.a;
-                        return htmel()`
+                        return html()`
                         ${() => {
                             innerRenders += 1;
                             return 1
@@ -388,13 +388,13 @@ describe('text node', function () {
                 a: "inner value",
             }
 
-            let check = HtmelChecker(outerState, [
+            let check = YoffeeChecker(outerState, [
                 {
-                    template: () => htmel(outerState)`
+                    template: () => html(outerState)`
                     <div>
                     ${() => {
                         outerRenders += 1;
-                        return htmel(innerState)`
+                        return html(innerState)`
                         ${() => {
                             innerRenders += 1;
                             return outerState.a + innerState.a
@@ -440,15 +440,15 @@ describe('text node', function () {
                 a: "inner value",
             }
 
-            let check = HtmelChecker(outerState, [
+            let check = YoffeeChecker(outerState, [
                 {
-                    template: () => htmel(outerState)`
+                    template: () => html(outerState)`
                     <div>
                     ${() => {
                         outerRenders += 1;
                         // Just to access state.a to trigger rerender
                         let b = outerState.a
-                        return htmel(innerState)`
+                        return html(innerState)`
                         ${() => {
                             innerRenders += 1;
                             return innerState.a

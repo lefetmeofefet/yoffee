@@ -1,0 +1,17 @@
+<script type="module">
+    import {html, createYoffeeElement} from "../dist/yoffee.min.js"
+
+    createYoffeeElement("counter-button", () => {
+        const state = {
+            clicks: 0
+        }
+        return html(state)`
+            <button onclick=${() => state.clicks += 1}>
+                I count ${() => state.clicks} klikz
+            </button>
+        `
+    })
+</script>
+
+<counter-button></counter-button>
+<counter-button></counter-button>

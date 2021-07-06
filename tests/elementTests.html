@@ -1,0 +1,103 @@
+<script type="module">
+    import {html, createYoffeeElement, YoffeeElement} from "../src/yoffee.js"
+    // import {html, createYoffeeElement, YoffeeElement} from "../dist/yoffee.min.js"
+
+    window.state = {
+        thingy: {wellp: "thingy"},
+        clickt: 0,
+        items: [
+            {list: false},
+            {list: true},
+            {list: false},
+        ]
+    }
+
+    // createYoffeeElement(
+    //     "some-thing1",
+    //     props => {
+    //         props.clickt = 0;
+    //         return html(props, state)`
+    //         I AM PARENT alriht?
+    //         <some-thing2 abcd=${() => state.thingy}
+    //                      onthinghappened=${() => () => {
+    //             console.log("Thing happened");
+    //             props.clickt += 1
+    //         }} clickt=${() => props.clickt}></some-thing2>
+    //         `
+    //     }
+    // )
+    //
+    // createYoffeeElement(
+    //     "some-thing2",
+    //     (props, element) => {
+    //         return html(props, props.abcd)`
+    //         <button onclick=${() => () => props.onthinghappened()}>
+    //             i bin clickt ${() => props.clickt}  and prop a is ${() => props.a}
+    //             <div></div>
+    //             ${() => props.abcd.wellp}
+    //         </button>
+    //         `
+    //     }
+    // )
+
+    createYoffeeElement(
+        "some-thing1",
+        (props, element) => {
+            // let state = {
+            //     clickt: 0
+            // }
+            element.onPropUpdate = prop => console.log("Prop updated: ", prop)
+            element.onConnect = () => console.log("Connected")
+            element.onDisconnect = () => console.log("Disonnected")
+
+            return html(props, state)`
+            <button onclick=${() => () => state.clickt += 1}>
+                i bin clickt ${() => state.clickt}  and prop a is ${() => props.a}
+            </button>
+            <div>i am before</div>
+            ${() => state.items.map(item => html(item)`
+                ${() => item.list ? html()`<div>list?</div><div>list???</div>` : ` is_not_list `}
+            `)}
+            `
+        }
+    )
+
+
+    createYoffeeElement(
+        "some-thing4",
+        // props => html(props)`Property "b" is probably ${() => props.b}`
+        class extends YoffeeElement {
+            render() {
+                this.state = {
+                    clickt: 0
+                }
+                return html(this.props, this.state)`
+                <button onclick=${() => () => this.state.clickt += 1}>
+                    i bin clickt ${() => this.state.clickt}  and prop a is ${() => this.props.a}
+                </button>
+                `
+            }
+
+            propUpdatedCallback(prop) {
+                console.log("Prop updated: ", prop)
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+                console.log("Connected")
+            }
+
+            disconnectedCallback() {
+                super.disconnectedCallback();
+                console.log("Disconnected")
+            }
+        }
+    )
+
+    export {html as html}
+
+</script>
+
+<some-thing1></some-thing1>
+<br>
+<some-thing4></some-thing4>

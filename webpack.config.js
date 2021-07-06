@@ -3,15 +3,18 @@ import WebpackShellPlugin from 'webpack-shell-plugin';
 import webpack from 'webpack';
 
 let webpackConfig = {
-    entry: './src/htmel.js',
+    entry: './src/yoffee.js',
     // devtool: "source-map",
     output: {
-        filename: "htmel.min.js",
-        library: "htmel"
+        filename: "yoffee.min.js",
+        library: "yoffee",
+        libraryTarget: "var"
     },
     plugins: [
-        // Because webpack doesn't support importing the bundle with 'import htmel from "..."', we do this
-        new WebpackShellPlugin({onBuildEnd: [`echo export default htmel.default; let HTMElement = htmel.HTMElement; export {HTMElement}>>dist/htmel.min.js`]})
+        // Because webpack doesn't support exporting the bundle with es6, we have to add code manually with bash like stupids
+        new WebpackShellPlugin({
+            onBuildEnd: [`echo let {html, YoffeeElement, createYoffeeElement} = yoffee; export {html, YoffeeElement, createYoffeeElement}>>dist/yoffee.min.js`]
+        })
     ],
     optimization: {
         minimize: true,
@@ -23,7 +26,7 @@ let webpackConfig = {
                         drop_console: true,
                     },
                     mangle: {
-                        reserved: ["htmel", "exports", "replaceWith"],
+                        reserved: ["yoffee", "exports", "replaceWith"],
                         // properties: true
                     },
                 }

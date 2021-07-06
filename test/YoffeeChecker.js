@@ -1,6 +1,6 @@
 import {validateDom} from "./DomValidator.js";
 
-function HtmelChecker(stateObj, checkers) {
+function YoffeeChecker(stateObj, checkers) {
     if (!Array.isArray(checkers)) {
         checkers = [checkers]
     }
@@ -43,4 +43,4 @@ function HtmelChecker(stateObj, checkers) {
     )
 }
 
-export {HtmelChecker}
+export {YoffeeChecker}

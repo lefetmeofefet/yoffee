@@ -1,28 +1,28 @@
-import {HtmelChecker} from "./HtmelChecker.js";
-// import htmel from "../src/htmel-tree/htmel.js";
-import htmel from "../src/htmel.js";
-// import htmel from "../dist/htmel.min.js"
+import {YoffeeChecker} from "./YoffeeChecker.js";
+// import html from "../src/html-tree/html.js";
+import {html} from "../src/yoffee.js";
+// import html from "../dist/html.min.js"
 
 import assert from 'assert';
 
 
 describe('attribute node', function () {
     it('static rendering', function (done) {
-        let check = HtmelChecker(null, [
+        let check = YoffeeChecker(null, [
             { // Static attribute value
-                template: () => htmel()`<div dir=${"rtl"}></div>`,
+                template: () => html()`<div dir=${"rtl"}></div>`,
                 expected: () => `<div dir="rtl"></div>`
             }, { // Static attribute name
-                template: () => htmel()`<div ${"attr"}></div>`,
+                template: () => html()`<div ${"attr"}></div>`,
                 expected: () => `<div attr></div>`
             }, { // Static dict attribute
-                template: () => htmel()`<div ${{a: 3, b: "asd"}}></div>`,
+                template: () => html()`<div ${{a: 3, b: "asd"}}></div>`,
                 expected: () => `<div a="3" b="asd"></div>`
             }, { // Static empty dict attribute
-                template: () => htmel()`<div ${{}}></div>`,
+                template: () => html()`<div ${{}}></div>`,
                 expected: () => `<div></div>`
             }, { // Static null attr name
-                template: () => htmel()`<div ${null}></div>`,
+                template: () => html()`<div ${null}></div>`,
                 expected: () => `<div></div>`
             }
         ]);
@@ -33,36 +33,36 @@ describe('attribute node', function () {
         let state = {
             a: "rtl"
         }
-        let check = HtmelChecker(state, [
+        let check = YoffeeChecker(state, [
             { // Attribute
-                template: () => htmel(state)`<div dir=${() => state.a}></div>`,
+                template: () => html(state)`<div dir=${() => state.a}></div>`,
                 expected: () => state.a ? `<div dir="${state.a === true ? "" : state.a}"></div>` : `<div></div>`
             }, { // Attribute with quotes
-                template: () => htmel(state)`<div dir="${() => state.a}"></div>`,
+                template: () => html(state)`<div dir="${() => state.a}"></div>`,
                 expected: () => state.a ? `<div dir="${state.a === true ? "" : state.a}"></div>` : `<div></div>`
             }, { // Part of attribute
-                template: () => htmel(state)`<div dir=a${() => state.a}a></div>`,
+                template: () => html(state)`<div dir=a${() => state.a}a></div>`,
                 expected: () => `<div dir="a${state.a}a"></div>`
             }, { // Part of attribute with quotes
-                template: () => htmel(state)`<div dir="a ${() => state.a} a"></div>`,
+                template: () => html(state)`<div dir="a ${() => state.a} a"></div>`,
                 expected: () => `<div dir="a ${state.a} a"></div>`
             }, { // Twice in the same attribute
-                template: () => htmel(state)`<div dir="${() => state.a} a ${() => state.a}"></div>`,
+                template: () => html(state)`<div dir="${() => state.a} a ${() => state.a}"></div>`,
                 expected: () => `<div dir="${state.a} a ${state.a}"></div>`
             }, { // Two attributes with the same prop
-                template: () => htmel(state)`<div a1=${() => state.a} a2=${() => state.a}></div>`,
+                template: () => html(state)`<div a1=${() => state.a} a2=${() => state.a}></div>`,
                 expected: () => state.a ? `<div a1="${state.a === true ? "" : state.a}" a2="${state.a === true ? "" : state.a}"></div>` : `<div></div>`
             }, { // Attr name
-                template: () => htmel(state)`<div ${() => state.a}></div>`,
+                template: () => html(state)`<div ${() => state.a}></div>`,
                 expected: () => state.a ? `<div ${state.a}></div>` : `<div></div>`
             }, { // Part of attr name
-                template: () => htmel(state)`<div a${() => state.a}a></div>`,
+                template: () => html(state)`<div a${() => state.a}a></div>`,
                 expected: () => `<div a${state.a}a></div>`
             }, { // Attr dict
-                template: () => htmel(state)`<div ${() => ({a: state.a, b: state.a})}></div>`,
+                template: () => html(state)`<div ${() => ({a: state.a, b: state.a})}></div>`,
                 expected: () => state.a ? `<div a="${state.a === true ? "" : state.a}" b="${state.a === true ? "" : state.a}"></div>` : `<div></div>`
             }, { // Attr dict with static value
-                template: () => htmel(state)`<div ${() => ({a: state.a, b: "smth"})}></div>`,
+                template: () => html(state)`<div ${() => ({a: state.a, b: "smth"})}></div>`,
                 expected: () => state.a ? `<div a=${state.a === true ? '""' : state.a} b="smth"></div>` : `<div b="smth"></div>`
             },
         ]);
@@ -86,9 +86,9 @@ describe('attribute node', function () {
         it('event firing', function (done) {
             let clicked = false;
 
-            let check = HtmelChecker(null, [
+            let check = YoffeeChecker(null, [
                 { // Static event handler
-                    template: () => htmel()`<div onclick="${() => clicked = true}"></div>`,
+                    template: () => html()`<div onclick="${() => clicked = true}"></div>`,
                     expected: () => `<div></div>`,
                     validator: (_, e) => {
                         e.click();
@@ -96,7 +96,7 @@ describe('attribute node', function () {
                         clicked = false;
                     }
                 }, { // Static event handler that returns function
-                    template: () => htmel()`<div onclick="${() => () => clicked = true}"></div>`,
+                    template: () => html()`<div onclick="${() => () => clicked = true}"></div>`,
                     expected: () => `<div></div>`,
                     validator: (_, e) => {
                         e.click();
@@ -116,9 +116,9 @@ describe('attribute node', function () {
             let state = {
                 func: () => clicked = true
             }
-            let check = HtmelChecker(state, [
+            let check = YoffeeChecker(state, [
                 { // Static event handler
-                    template: () => htmel(state)`<div onclick="${() => state.func()}"></div>`,
+                    template: () => html(state)`<div onclick="${() => state.func()}"></div>`,
                     expected: () => `<div></div>`,
                     validator: (_, e) => {
                         e.click();
@@ -155,34 +155,37 @@ describe('attribute node', function () {
         }
         let isObj = o => ["function", "object"].includes(typeof o);
 
-        let check = HtmelChecker(state, [
+        let check = YoffeeChecker(state, [
             { // Static obj attr
-                template: () => htmel()`<div prop=${{a: "static"}}></div>`,
-                expected: () => `<div prop="__obj_placeholder__"></div>`,
-                validator: (_, e) => assert.equal(e.prop.a, "static")
+                template: () => html()`<div prop=${{a: "static"}}></div>`,
+                expected: () => `<div></div>`,
+                validator: (_, e) => assert.equal(e.prop.a, "static") && assert.equal(e.props.prop.a, "static")
             }, { // Obj attr
-                template: () => htmel(state)`<div prop=${() => ({a: state.a})}></div>`,
-                expected: () => `<div prop="__obj_placeholder__"></div>`,
-                validator: (_, e) => assert.equal(e.prop.a, state.a)
+                template: () => html(state)`<div prop=${() => ({a: state.a})}></div>`,
+                expected: () => `<div></div>`,
+                validator: (_, e) => assert.equal(e.prop.a, state.a) && assert.equal(e.props.prop.a, state.a)
             }, { // Obj attr
-                template: () => htmel(state)`<div prop=${() => state.obj}></div>`,
+                template: () => html(state)`<div prop=${() => state.obj}></div>`,
                 expected: () => state.obj == null ? `<div></div>` : (
-                    isObj(state.obj) ? `<div prop="__obj_placeholder__"></div>` : `<div prop="${state.obj}"></div>`
+                    isObj(state.obj) ? `<div></div>` : `<div prop="${state.obj}"></div>`
                 ),
                 validator: (_, e) => state.obj == null ? assert.equal(e.prop, null) : (
-                    isObj(state.obj) ? assert.equal(e.prop, state.obj) : assert.equal(e.prop, null)
+                    isObj(state.obj) ? (assert.equal(e.prop, state.obj) && assert.equal(e.props.prop, state.obj))
+                        : (assert.equal(e.prop, null) && assert.equal(e.props.prop, null))
                 )
             }, {
-                template: () => htmel(state)`<div ${() => state.attrsDict}></div>`,
+                template: () => html(state)`<div ${() => state.attrsDict}></div>`,
                 expected: () => (state.attrsDict == null || state.attrsDict.prop == null) ? `<div></div>` : (
-                    isObj(state.attrsDict.prop) ? `<div prop="__obj_placeholder__"></div>`
+                    isObj(state.attrsDict.prop) ? `<div></div>`
                         : `<div prop="${state.attrsDict.prop}"></div>`
                 ),
                 validator: (_, e) => (state.attrsDict == null || state.attrsDict.prop == null) ?
-                    assert.equal(e.prop, null)
+                    (assert.equal(e.prop, null) && assert.equal(e.props.prop, null))
                     :
                     (
-                        isObj(state.attrsDict.prop) ? assert.equal(e.prop, state.attrsDict.prop) : assert.equal(e.prop, null)
+                        isObj(state.attrsDict.prop) ?
+                            (assert.equal(e.prop, state.attrsDict.prop) && assert.equal(e.props.prop, state.attrsDict.prop)) :
+                            (assert.equal(e.prop, null) && assert.equal(e.props.prop, null))
                     )
             },
         ]);
@@ -224,11 +227,11 @@ describe('attribute node', function () {
     })
 
     it('illegal attributes', function (done) {
-        assert.throws(() => htmel()`<div ${"123"}></div>`,
+        assert.throws(() => html()`<div ${"123"}></div>`,
             Error, "Numeric attr name should throw an error");
-        assert.throws(() => htmel()`<div ${"123asd"}></div>`,
+        assert.throws(() => html()`<div ${"123asd"}></div>`,
             Error, "Attr name that starts with numeric should throw an error");
-        assert.throws(() => htmel()`<div ${{a: 2, b: 3, "123": "illegal"}}></div>`,
+        assert.throws(() => html()`<div ${{a: 2, b: 3, "123": "illegal"}}></div>`,
             Error, "Numeric attr name in dict should throw an error");
 
         done()

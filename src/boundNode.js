@@ -14,7 +14,10 @@ class BoundNode {
         this.expressionsLocation = expressionsLocation;
         this._arrayDomNodes = [];
 
-        /** @type String */
+        /**
+         * @type String
+         * The value of the node before IDs were replaced with their values
+         */
         this.initialValue = {
             // TextNode content
             [SearchLocations.TEXT_NODE]: () => domNode.data,
@@ -23,7 +26,7 @@ class BoundNode {
             // Attribute name
             [SearchLocations.ATTR_NAME]: () => domNode.name,
         }[expressionsLocation]();
-        this.ownerElement = this.domNode.ownerElement
+        this.ownerElement = this.domNode.ownerElement // The element that owns an AttributeNode
     }
 
     update() {
@@ -76,7 +79,7 @@ class BoundNode {
         if (newValue instanceof Array) {
             // Create location marker if there isn't
             if (!(this._lastTextNodeValue instanceof Array)) {
-                let listLocationMarker = document.createElement("htmel-list-location-marker");
+                let listLocationMarker = document.createElement("yoffee-list-location-marker");
                 this.domNode.replaceWith(listLocationMarker);
                 this.domNode = listLocationMarker;
             }
@@ -145,7 +148,7 @@ class BoundNode {
             //         arrayValue = typeof arrayValue === "object" ? arrayValue : document.createTextNode(arrayValue)
             //         nextArrayDomNodes.push(arrayValue);
             //
-            //         if (arrayValue.__isHtmel) {
+            //         if (arrayValue.__isYoffee) {
             //             for (let childNode of arrayValue.__childNodes) {
             //                 insert(childNode);
             //             }
@@ -167,7 +170,7 @@ class BoundNode {
                     } else {
                         this.domNode.parentNode.insertBefore(
                             element,
-                            (this._arrayDomNodes[0].__isHtmel ? this._arrayDomNodes[0].__childNodes[0] : this._arrayDomNodes[0])
+                            (this._arrayDomNodes[0].__isYoffee ? this._arrayDomNodes[0].__childNodes[0] : this._arrayDomNodes[0])
                         )
                     }
                 } else {
@@ -177,7 +180,7 @@ class BoundNode {
                         currentElement.nextSibling
                     )
                 }
-                currentElement = element.__isHtmel ? element.__childNodes[element.__childNodes.length - 1] : element;
+                currentElement = element.__isYoffee ? element.__childNodes[element.__childNodes.length - 1] : element;
             }
 
             for (let newElement of newValue) {
@@ -191,15 +194,15 @@ class BoundNode {
                     (typeof newElement === "number" ? newElement.toString() : newElement)
                 ) {
                     newArrayDomNodes.push(oldElement);
-                    currentElement = oldElement.__isHtmel ?
+                    currentElement = oldElement.__isYoffee ?
                         oldElement.__childNodes[oldElement.__childNodes.length - 1] : oldElement;
                     this._arrayDomNodes.shift();
                 } else {
                     newElement = typeof newElement === "object" ? newElement : document.createTextNode(newElement)
                     newArrayDomNodes.push(newElement);
 
-                    if (newElement.__isHtmel) {
-                        // The reason we keep htmel documentFragments in _arrayDomNodes is because of caching
+                    if (newElement.__isYoffee) {
+                        // The reason we keep yoffee documentFragments in _arrayDomNodes is because of caching
                         for (let childNode of newElement.__childNodes) {
                             insert(childNode);
                         }
@@ -223,7 +226,7 @@ class BoundNode {
             // Either element or object. If object, wat do we do??
             // TODO: WAT DO WE DO?
             if (!(newValue instanceof Node)) {
-                throw "YOFFEE: Expression value can't be a regular JS object!"
+                throw "YOFFEE: Text value can't be a regular JS object!"
             }
             this.domNode.replaceWith(newValue);
             this.domNode = newValue;
@@ -246,10 +249,10 @@ class BoundNode {
     }
 
     _removeDomNode(domNode) {
-        // If domNode is __isHtmel, kill all children because it's a DocumentFragment. Note: checking for
-        // DocumentFragments would be wrong, because we never store DocumentFragments which aren't htmel
+        // If domNode is __isYoffee, kill all children because it's a DocumentFragment. Note: checking for
+        // DocumentFragments would be wrong, because we never store DocumentFragments which aren't yoffee
         // template in `this._arrayDomNodes`.
-        if (domNode.__isHtmel) {
+        if (domNode.__isYoffee) {
             for (let childNode of domNode.__childNodes) {
                 childNode.remove();
             }
@@ -268,6 +271,8 @@ class BoundNode {
             this._setEventListener();
         } else {
             let lastResult = this.expressions[0].lastResult;
+
+            // Check if there is only one expression, and no fixed text as well (by comparing the expression length)
             let isJustExpression = this.expressions.length === 1 && this.initialValue.length === this.expressions[0].id.length;
 
             if (isJustExpression && (lastResult === false || lastResult == null)) {
@@ -275,23 +280,23 @@ class BoundNode {
                 this.ownerElement[this.domNode.name] = undefined;
                 this.ownerElement.removeAttribute(this.domNode.name);
             } else if (isJustExpression && ["function", "object"].includes(typeof lastResult)) {
-                // if attr value is function or object, set it directly on the element instead of attribute because
-                // attributes can only hold strings
+                // If attr value is function or object, set it directly as a property of the element instead of
+                // attribute, because attributes can only hold strings
+                setPropOnPotentialYoffeeElement(this.ownerElement, this.domNode.name, lastResult)
 
-                // Has to be done before setDomNode
-                this.ownerElement[this.domNode.name] = lastResult;
-
-                this._setDomNode("__obj_placeholder__");
+                // Remove the attribute (First check if we already removed it before)
+                if (this.domNode.ownerElement != null) {
+                    this.domNode.ownerElement.removeAttributeNode(this.domNode);
+                }
             } else if (isJustExpression && lastResult === true) {
                 // If we get true, just set the attribute with no value (<div a></div>)
                 this.ownerElement[this.domNode.name] = undefined;
                 this._setDomNode("");
             } else {
-
                 // Has to be done before setDomNode
                 this.ownerElement[this.domNode.name] = undefined;
 
-                // If string, replaces ids with expression values
+                // If string, replaces original value ids with expression values
                 let newValue = this.initialValue;
                 for (let expression of this.expressions) {
                     newValue = newValue.replace(expression.id, expression.lastResult)
@@ -312,12 +317,13 @@ class BoundNode {
         let lastResult = this.expressions[0].lastResult;
         let isJustExpression = this.expressions.length === 1 && this.initialValue.length === this.expressions[0].id.length;
 
+        // Because changing an attribute name is impossible, we must remove the attributes and creates new ones with updated names
         if (this._lastAttributeMap) {
             // Removes last attribute mapping if there was
             // TODO: Dont remove all, replace only different ones...
             for (let [attrName, _] of this._lastAttributeMap) {
                 this.ownerElement.removeAttribute(attrName);
-                this.ownerElement[attrName] = undefined;
+                removePropFromPotentialYoffeeElement(this.ownerElement, attrName)
             }
             this._lastAttributeMap = null
         } else {
@@ -337,8 +343,16 @@ class BoundNode {
             for (let [attrName, value] of this._lastAttributeMap) {
                 if (value !== false && value !== null) {
                     if (["function", "object"].includes(typeof value)) {
-                        this.ownerElement.setAttribute(attrName, "__obj_placeholder__");
-                        this.ownerElement[attrName] = value
+                        // this.ownerElement.setAttribute(attrName, "__obj_placeholder__");
+                        // this.ownerElement[attrName] = value
+
+                        setPropOnPotentialYoffeeElement(this.ownerElement, attrName, value)
+
+                        // Remove the attribute (First check if we already removed it before)
+                        if (this.domNode.ownerElement != null) {
+                            this.domNode.ownerElement.removeAttributeNode(this.domNode);
+                        }
+
                     } else {
                         if (value === true) {
                             value = ""
@@ -366,9 +380,11 @@ class BoundNode {
      * @private
      */
     _setEventListener() {
-        let eventName = this.domNode.name.substring(2); // Remove the `on` from `onclick`
+        let listenerName = this.domNode.name; // For example, 'onclick'
+        let eventName = listenerName.substring(2); // Remove the `on` from `onclick`
 
-        this.domNode.ownerElement.addEventListener(eventName, (...args) => {
+        // The function that will handle both the event and the callback function property
+        let handleEvent = (...args) => {
             const result = this.expressions[0].lastResult(...args);
 
             // In case expression returns another function (user wrote ${() => () => print("stuff)} for example)
@@ -378,8 +394,49 @@ class BoundNode {
 
             // TODO: If user returned a string (onclick="${() => state.wat ? "alert(1)" : "alert(2)}") we should eval that
             return result
-        });
+        }
+
+        // TODO: Remove event listener when the value changes!!! (like the attribute being deleted, then added again?)
+        // Setting event listener
+        this.domNode.ownerElement.addEventListener(eventName, handleEvent);
+
+        // Adding callback function property as well
+        setPropOnPotentialYoffeeElement(this.domNode.ownerElement, listenerName, handleEvent)
+
+        // Remove the attribute
         this.domNode.ownerElement.removeAttributeNode(this.domNode);
+    }
+}
+
+function setPropOnPotentialYoffeeElement(element, propName, propValue) {
+    // First, setting property on element
+    element[propName] = propValue
+
+    // Checking if element is initialized or still an UnknownHTMLElement. If initilized, call `updateProp`
+    if (element.updateProp) {
+        element.updateProp(propName)
+    } else {
+        // If not initialized, keep everything in props until it is initialized
+        if (element.props == null) {
+            element.props = {}
+        }
+        element.props[propName] = propValue
+    }
+}
+
+function removePropFromPotentialYoffeeElement(element, propName) {
+    // First, setting property on element
+    element[propName] = undefined
+
+    // Checking if element is initialized or still an UnknownHTMLElement. If initilized, call `updateProp`
+    if (element.updateProp) {
+        element.updateProp(propName)
+    } else {
+        // If not initialized, keep everything in props until it is initialized
+        if (element.props == null) {
+            element.props = {}
+        }
+        element.props[propName] = undefined
     }
 }
 

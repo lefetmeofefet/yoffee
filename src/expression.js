@@ -24,7 +24,7 @@ function mutationFilter(arr, cb) {
 const ExpResultTypes = {
     PRIMITIVE: "primitive",
     ARRAY: "array",
-    HTMEL_TEMPLATE: "htmel_template"
+    YOFFEE_TEMPLATE: "yoffee_template"
 }
 
 class Expression {
@@ -33,6 +33,7 @@ class Expression {
         this.id = randomId();
         this.lastResult = null;
         this.boundNode = null;
+        this.boundProps = new Set()
         this.isEventHandler = false;
         this.isStatic = (typeof this._cb) !== "function";
 
@@ -49,9 +50,9 @@ class Expression {
         } else {
             let newResult = this._cb();
 
-            // Checks if the output is a htmel template
-            if (newResult != null && newResult.createHtmelTemplate) {
-                this.handleHtmelTemplate(newResult);
+            // Checks if the output is a yoffee template
+            if (newResult != null && newResult.createYoffeeTemplate) {
+                this.handleYoffeeTemplate(newResult);
             } else if (Array.isArray(newResult)) {
                 this.handleArray(newResult);
             // } else if (typeof newResult === "object" && newResult != null) {
@@ -66,17 +67,17 @@ class Expression {
         }
     }
 
-    handleHtmelTemplate(deferredTemplate) {
+    handleYoffeeTemplate(deferredTemplate) {
         // In case we are recursive
-        if (this.resultType === ExpResultTypes.HTMEL_TEMPLATE &&
-            this.resultMetadata.htmelTemplate == null) {
+        if (this.resultType === ExpResultTypes.YOFFEE_TEMPLATE &&
+            this.resultMetadata.yoffeeTemplate == null) {
             return
         }
 
         // Check if new template is the same as the last
-        if (this.resultType === ExpResultTypes.HTMEL_TEMPLATE &&
-            // !this.resultMetadata.htmelTemplate.__contentChanged &&
-            // !this.resultMetadata.htmelTemplate.__weaklyBoundProps.has(TemplateStack.getCurrentlySetProp()) &&
+        if (this.resultType === ExpResultTypes.YOFFEE_TEMPLATE &&
+            // !this.resultMetadata.yoffeeTemplate.__contentChanged &&
+            // !this.resultMetadata.yoffeeTemplate.__weaklyBoundProps.has(TemplateStack.getCurrentlySetProp()) &&
             this.resultMetadata.cacheable &&
             isHashSame(this.resultMetadata.hash, this.resultMetadata.propsObjs, deferredTemplate.hash, deferredTemplate.propsObjs)
         ) {
@@ -88,28 +89,28 @@ class Expression {
             })
             this.lastResult.__updateExpressions();
         } else {
-            // Destroy all past htmel children
+            // Destroy all past yoffee children
             this.removeChildTemplateListeners()
 
-            this.resultType = ExpResultTypes.HTMEL_TEMPLATE;
+            this.resultType = ExpResultTypes.YOFFEE_TEMPLATE;
             this.resultMetadata = deferredTemplate
-            this.lastResult = deferredTemplate.createHtmelTemplate();
+            this.lastResult = deferredTemplate.createYoffeeTemplate();
         }
     }
 
     handleArray(newResult) {
-        // Check if last result was an array, and cache existing htmels
+        // Check if last result was an array, and cache existing yoffees
         if (this.resultType === ExpResultTypes.ARRAY) {
             let oldHashToTemplates = this.resultMetadata;
 
-            // // Filter out and remove watchers for htmels with a changed content
+            // // Filter out and remove watchers for yoffees with a changed content
             // for (let templateList of oldHashToTemplates.values()) {
             //     mutationFilter(templateList, t => {
-            //         // if (t.htmelTemplate.__contentChanged) {
-            //         if (t.htmelTemplate != null
-            //             && t.htmelTemplate.__weaklyBoundProps.has(TemplateStack.getCurrentlySetProp())
+            //         // if (t.yoffeeTemplate.__contentChanged) {
+            //         if (t.yoffeeTemplate != null
+            //             && t.yoffeeTemplate.__weaklyBoundProps.has(TemplateStack.getCurrentlySetProp())
             //         ) {
-            //             t.htmelTemplate.__removeWatchers();
+            //             t.yoffeeTemplate.__removeWatchers();
             //             return false
             //         }
             //         return true
@@ -120,11 +121,11 @@ class Expression {
             this.lastResult = [];
             let newHashToTemplates = new Map();
 
-            // Important to override resultMetadata here, because next code can call createHtmelTemplate recursively
+            // Important to override resultMetadata here, because next code can call createYoffeeTemplate recursively
             this.resultMetadata = newHashToTemplates;
 
             for (let listItem of newResult) {
-                if (listItem != null && listItem.createHtmelTemplate) {
+                if (listItem != null && listItem.createYoffeeTemplate) {
                     let cached = false;
 
                     // Find old template with same hash and props objects
@@ -140,16 +141,16 @@ class Expression {
                             cached = true
 
                             // TODO: Do we need the if???
-                            // if (cachedTemplate.htmelTemplate != null) {
+                            // if (cachedTemplate.yoffeeTemplate != null) {
 
                             console.log("Using cached template in list")
-                            this.lastResult.push(cachedTemplate.htmelTemplate);
+                            this.lastResult.push(cachedTemplate.yoffeeTemplate);
                             cachedTemplate.shouldntDelete = true
 
-                            cachedTemplate.htmelTemplate.__expressions.forEach((exp, index) => {
+                            cachedTemplate.yoffeeTemplate.__expressions.forEach((exp, index) => {
                                 exp._cb = listItem.expressionCbs[index];
                             })
-                            cachedTemplate.htmelTemplate.__updateExpressions();
+                            cachedTemplate.yoffeeTemplate.__updateExpressions();
                             // }
 
                             addToListInMap(newHashToTemplates, cachedTemplate.hash, cachedTemplate);
@@ -159,19 +160,19 @@ class Expression {
                     // Old wasn't found, creating new
                     if (!cached) {
                         addToListInMap(newHashToTemplates, listItem.hash, listItem);
-                        let htmelTemplate = listItem.createHtmelTemplate()
-                        this.lastResult.push(htmelTemplate);
+                        let yoffeeTemplate = listItem.createYoffeeTemplate()
+                        this.lastResult.push(yoffeeTemplate);
                     }
                 } else {
                     this.lastResult.push(listItem)
                 }
             }
 
-            // Delete old uncached htmels
+            // Delete old uncached yoffees
             for (let templateList of oldHashToTemplates.values()) {
                 templateList.forEach(t => {
                     if (!t.shouldntDelete) {
-                        t.htmelTemplate.__removeWatchers();
+                        t.yoffeeTemplate.__removeWatchers();
                     }
                 });
             }
@@ -189,9 +190,9 @@ class Expression {
             this.lastResult = [];
             let hashToTemplates = new Map();
             for (let item of newResult) {
-                if (item != null && item.createHtmelTemplate) {
-                    let htmelTemplate = item.createHtmelTemplate()
-                    this.lastResult.push(htmelTemplate)
+                if (item != null && item.createYoffeeTemplate) {
+                    let yoffeeTemplate = item.createYoffeeTemplate()
+                    this.lastResult.push(yoffeeTemplate)
                     addToListInMap(hashToTemplates, item.hash, item);
                 } else {
                     this.lastResult.push(item)
@@ -208,10 +209,10 @@ class Expression {
             return
         }
 
-        if (this.resultType === ExpResultTypes.HTMEL_TEMPLATE) {
-            this.resultMetadata.htmelTemplate.__removeWatchers();
+        if (this.resultType === ExpResultTypes.YOFFEE_TEMPLATE) {
+            this.resultMetadata.yoffeeTemplate.__removeWatchers();
         } else if (this.resultType === ExpResultTypes.ARRAY) {
-            this.lastResult.filter(item => item.__isHtmel).forEach(htmelTemplate => htmelTemplate.__removeWatchers());
+            this.lastResult.filter(item => item.__isYoffee).forEach(yoffeeTemplate => yoffeeTemplate.__removeWatchers());
         }
     }
 }
