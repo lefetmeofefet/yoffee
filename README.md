@@ -1,5 +1,5 @@
-# HTMEL
-![npm bundle size](https://img.shields.io/github/size/lefetmeofefet/htmel/dist/htmel.min.js)
+# YOFFEE.JS
+![npm bundle size](https://img.shields.io/github/size/lefetmeofefet/yoffee/dist/yoffee.min.js)
 
 Simple, Efficient, Declarative HTML templates with one-way data binding.
 
@@ -9,7 +9,7 @@ _Why should I use this over the likes of react and vue?_
 * Lighter
 * Unopinionated
 
-`htmel` doesn't force you to use webpack or any other bundler - the code runs
+`yoffee` doesn't force you to use webpack or any other bundler - the code runs
  natively in the browser. Try the following time counter example:
 
 ```javascript
