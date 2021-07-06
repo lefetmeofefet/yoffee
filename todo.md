@@ -9,4 +9,4 @@ it's used inside parent expression, make sure child doesnt re-evaluate
 * spaces in composite textnode are forgotten (<div>1 ${"2"} 3</div> will show as "1 23")
 * eventListeners: we automatically turn attributes that start with "on" to eventListeners.... but how can we send callbacks that start with on? we want dat!!! REEEE
     -  solution! add both eventListener and function callback property. why not.
-* 
+* update readme to have more documentation on createYoffeeElement and YoffeeElement class
