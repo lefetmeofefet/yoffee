@@ -160,7 +160,7 @@ Attributes:
 `<div dir=${() => state.dir}>what is my direction?</div>`
 ```
 
-Attribute name:
+Attribute names:
 ```javascript
 `<div ${() => state.attrName}>i have some attr</div>`
 ```
