@@ -9,6 +9,8 @@ _Why should I use this over the likes of react and vue?_
 * Lighter
 * Unopinionated
 
+[Official Documentation](https://yoffee.netlify.app/)
+
 `yoffee` doesn't force you to use webpack or any other bundler - the code runs
  natively in the browser. Try the following counter button example:
 
@@ -45,6 +47,8 @@ import {html, createYoffeeElement} from "yoffee"
 ```
 
 ## Overview
+Or alternatively, visit the docs site [here](https://yoffee.netlify.app/).
+
 `yoffee` lets you write [HTML templates](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template) in JavaScript with [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals).
 yoffee stays as unopinionated as possible by sticking to HTML with no special syntax.
 
@@ -379,7 +383,7 @@ when the last line is called, `yoffee` only updates `#child`'s content, by rerun
 the expression `() => state.content`.
 `yoffee` does several things to make that possible: 
 * Wrap state object with setters and getters
-    * Setters notify `yoffee` that property has changed and should be rerendered. 
+    * Setters notify `yoffee` that `content` property has changed and should be rerendered. 
     (when `state.content = "new content"` is called)
     * Getters allow us to know which property corresponds to which expression in 
     the html: when `() => state.content` is called, the getter for `content` is 
@@ -390,10 +394,7 @@ expressions. For example, `yoffee` keeps a reference to the `#child`'s TextNode
 which will be changed when `content`'s setter is called. It does so by inserting 
 randomly generated IDs into the expressions, the then finding them.
 
-In order to minimize the amount of DOM operations being done, `yoffee` batches DOM
-updates instead of immediately updating when setters are called.
-
-### Why bound expression must be functions?
+### Why do bound expression have to be functions?
 When an expression isn't a function, `yoffee` can't rerun it when state's properties are 
 changed - in fact, no property is linked to a static expression. Consider this expression:
 ```javascript

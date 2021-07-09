@@ -10,3 +10,5 @@ it's used inside parent expression, make sure child doesnt re-evaluate
 * eventListeners: we automatically turn attributes that start with "on" to eventListeners.... but how can we send callbacks that start with on? we want dat!!! REEEE
     -  solution! add both eventListener and function callback property. why not.
 * update readme to have more documentation on createYoffeeElement and YoffeeElement class
+
+* allow custom setter / getter for properties, or an "onchange" option. maybe state object will have "onChange" function that will be called each time? woohoooo

@@ -37,7 +37,7 @@ __propsAccessedByFather........??
 ### Cached templates
 ....yes........
 
-## YoffeeElement
+## `createYoffeeElement` /  YoffeeElement
 YoffeeElement provides a way to create Custom Dom Elements with Yoffee.JS at their core.
 Subclasses must implement one function: `render`.
 

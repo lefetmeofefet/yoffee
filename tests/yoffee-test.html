@@ -1,14 +1,19 @@
 <script type="module">
     import {html, createYoffeeElement} from "../dist/yoffee.min.js"
 
+    window.state = {
+        items: [1,2,3],
+        clicks: 0
+    }
     createYoffeeElement("counter-button", () => {
-        const state = {
-            clicks: 0
-        }
-        return html(state)`
+        // const state = {
+        //     clicks: 0
+        // }
+        return html(window.state)`
             <button onclick=${() => state.clicks += 1}>
                 I count ${() => state.clicks} klikz
             </button>
+            <div>${() => window.state.items.map(i => html()`<div>${i}</div>`)}</div>
         `
     })
 </script>
