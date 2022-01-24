@@ -29,15 +29,18 @@ function _createContainerElement(html) {
     let containerElement;
 
     if ((html.startsWith("<tr") || html.startsWith("<td")) && (html[3] === " " || html[3] === ">")) {
-        template.innerHTML = html;
-
-        let template2 = document.createElement("template");
-        template2.innerHTML = "<yoffee-template-container></yoffee-template-container>"
-        for (let child of template.content.children) {
-            template2.content.firstElementChild.appendChild(child)
-        }
-
-        containerElement = template2.content.firstElementChild;
+        // // This works for creating the tr/td, but the real problem is that the expression itself is outside the table
+        // // because table can't contain stuff that's not legit content
+        // template.innerHTML = html;
+        //
+        // let template2 = document.createElement("template");
+        // template2.innerHTML = "<yoffee-template-container></yoffee-template-container>"
+        // for (let child of template.content.children) {
+        //     template2.content.firstElementChild.appendChild(child)
+        // }
+        //
+        // containerElement = template2.content.firstElementChild;
+        throw `YOFFEE: Table tag is not supported`
     } else {
         template.innerHTML = `<yoffee-template-container>${html}</yoffee-template-container>`;
         containerElement = template.content.firstElementChild;
