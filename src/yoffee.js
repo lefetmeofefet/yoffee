@@ -5,6 +5,10 @@ import {randomId, fillStrWithExpressions} from "./utils.js";
 import {BoundNode} from "./boundNode.js";
 import {Expression} from "./expression.js";
 
+// function _joinTemplateStrings(arr1, arr2) {
+//     return arr2.reduce((accu, current, i) => accu + ((accu.trim().endsWith("<tbody>") || arr1[i + 1].trim().startsWith("</tbody>")) ? `<tr><td>${current}</td></tr>` : current) + arr1[i + 1], arr1[0])
+// }
+
 function _joinTemplateStrings(arr1, arr2) {
     return arr2.reduce((accu, current, i) => accu + current + arr1[i + 1], arr1[0])
 }
@@ -25,8 +29,23 @@ function _createContainerElement(html) {
 
     // yoffee-template-container doesn't exist, I made it up. It is an HTMLUnknownElement:
     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLUnknownElement
-    template.innerHTML = `<yoffee-template-container>${html.trim()}</yoffee-template-container>`;
-    let containerElement = template.content.firstElementChild;
+    html = html.trim();
+    let containerElement;
+
+    if (html.startsWith("<tr") || html.startsWith("<td")) {
+        template.innerHTML = html;
+
+        let template2 = document.createElement("template");
+        template2.innerHTML = "<yoffee-template-container></yoffee-template-container>"
+        for (let child of template.content.children) {
+            template2.content.firstElementChild.appendChild(child)
+        }
+
+        containerElement = template2.content.firstElementChild;
+    } else {
+        template.innerHTML = `<yoffee-template-container>${html}</yoffee-template-container>`;
+        containerElement = template.content.firstElementChild;
+    }
 
     // Firefox can't use document.evaluate on a node that's not under the document
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
@@ -320,7 +339,7 @@ function createBoundDocumentFragment(propsObjects, strings, expressionCbs) {
     // Add nodes into yoffee fragment
     yoffeeFragment.__childNodes = [...containerElement.childNodes]
     yoffeeFragment.__expressions = expressions;
-    yoffeeFragment.__updateExpressions = () => updateExpressions(expressions.filter(ex => !ex.isStatic))
+    yoffeeFragment.__updateExpressions = () => updateExpressions(expressions.filter(ex => !ex.isStatic && !ex.isEventHandler))
     yoffeeFragment.append(...containerElement.childNodes);
     return yoffeeFragment
 }
@@ -361,7 +380,7 @@ function html(...propsObjects) {
                 propsObjs: propsObjects,
                 expressionCbs: expressionCbs,
                 hash: hashTemplate(strings, expressionCbs),
-                cacheable: false,
+                cacheable: true,
             }
             deferredTemplate.createYoffeeTemplate = () => {
                 let t = createTemplate();

@@ -12,3 +12,4 @@ it's used inside parent expression, make sure child doesnt re-evaluate
 * update readme to have more documentation on createYoffeeElement and YoffeeElement class
 
 * allow custom setter / getter for properties, or an "onchange" option. maybe state object will have "onChange" function that will be called each time? woohoooo
+* think about memos: function that returns value that's repeated, maybe cache?

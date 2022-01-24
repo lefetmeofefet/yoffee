@@ -1,22 +1,46 @@
 <script type="module">
+    // import {html, createYoffeeElement} from "../dist/yoffee.min.js"
+    // import {html, createYoffeeElement} from "../src/yoffee.js"
     import {html, createYoffeeElement} from "../dist/yoffee.min.js"
 
     window.state = {
-        items: [1,2,3],
-        clicks: 0
+        clicks: 3,
+        items: [
+            {id: 1},
+            {id: 2},
+        ]
     }
+
     createYoffeeElement("counter-button", () => {
         // const state = {
         //     clicks: 0
         // }
+
         return html(window.state)`
-            <button onclick=${() => state.clicks += 1}>
-                I count ${() => state.clicks} klikz
-            </button>
-            <div>${() => window.state.items.map(i => html()`<div>${i}</div>`)}</div>
+            ${() => state.items.map(item => html(item)`
+            <div onclick=${() => {
+                state.items = state.items.filter(i => i.id !== item.id)
+            }}>
+                ${() => item.id}
+            </div>
+            `)}
         `
     })
-</script>
 
+    // let element = html(state)`
+    // ${() => new Array(state.clicks).fill(0).map(() => html()`
+    //     <tr>
+    //         <td>1 ${() => state.clicks}</td>
+    //         <td>2 ${() => state.clicks}</td>
+    //         <td>3 ${() => state.clicks}</td>
+    //     </tr>
+    //
+    // `)}
+    // `
+    // document.body.querySelector("#table").appendChild(element)
+</script>
+<table>
+    <tbody id="table"></tbody>
+</table>
 <counter-button></counter-button>
-<counter-button></counter-button>
+<!--<counter-button></counter-button>-->

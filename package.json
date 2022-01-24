@@ -1,6 +1,6 @@
 {
   "name": "yoffee",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "Minimal HTML one-way binding library",
   "module": "src/yoffee.js",
   "type": "module",
