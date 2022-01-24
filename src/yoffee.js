@@ -5,10 +5,6 @@ import {randomId, fillStrWithExpressions} from "./utils.js";
 import {BoundNode} from "./boundNode.js";
 import {Expression} from "./expression.js";
 
-// function _joinTemplateStrings(arr1, arr2) {
-//     return arr2.reduce((accu, current, i) => accu + ((accu.trim().endsWith("<tbody>") || arr1[i + 1].trim().startsWith("</tbody>")) ? `<tr><td>${current}</td></tr>` : current) + arr1[i + 1], arr1[0])
-// }
-
 function _joinTemplateStrings(arr1, arr2) {
     return arr2.reduce((accu, current, i) => accu + current + arr1[i + 1], arr1[0])
 }
@@ -32,7 +28,7 @@ function _createContainerElement(html) {
     html = html.trim();
     let containerElement;
 
-    if (html.startsWith("<tr") || html.startsWith("<td")) {
+    if ((html.startsWith("<tr") || html.startsWith("<td")) && (html[3] === " " || html[3] === ">")) {
         template.innerHTML = html;
 
         let template2 = document.createElement("template");

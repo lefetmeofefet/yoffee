@@ -27,17 +27,17 @@
         `
     })
 
-    // let element = html(state)`
-    // ${() => new Array(state.clicks).fill(0).map(() => html()`
-    //     <tr>
-    //         <td>1 ${() => state.clicks}</td>
-    //         <td>2 ${() => state.clicks}</td>
-    //         <td>3 ${() => state.clicks}</td>
-    //     </tr>
-    //
-    // `)}
-    // `
-    // document.body.querySelector("#table").appendChild(element)
+    let element = html(state)`
+    ${() => new Array(state.clicks).fill(0).map(() => html()`
+        <tr>
+            <td>1 ${() => state.clicks}</td>
+            <td>2 ${() => state.clicks}</td>
+            <td>3 ${() => state.clicks}</td>
+        </tr>
+
+    `)}
+    `
+    document.body.querySelector("#table").appendChild(element)
 </script>
 <table>
     <tbody id="table"></tbody>
