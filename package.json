@@ -2,7 +2,8 @@
   "name": "yoffee",
   "version": "0.0.7",
   "description": "Minimal HTML one-way binding library",
-  "module": "src/yoffee.js",
+  "main": "dist/yoffe.min.js",
+  "module": "dist/yoffee.min.js",
   "type": "module",
   "scripts": {
     "test": "mocha -r jsdom-global/register",
