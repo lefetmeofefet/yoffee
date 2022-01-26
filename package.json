@@ -1,14 +1,13 @@
 {
   "name": "yoffee",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Minimal HTML one-way binding library",
   "main": "dist/yoffe.min.js",
   "module": "dist/yoffee.min.js",
   "type": "module",
   "scripts": {
     "test": "mocha -r jsdom-global/register",
-    "build": "node webpack.config.js",
-    "build-rollup": "rollup -c",
+    "build": "rollup -c",
     "upload": "npm publish --access=public"
   },
   "author": {
@@ -20,6 +19,11 @@
       "name": "Harambe",
       "email": "davidgdalevich7@gmail.com",
       "url": "http://harambism.ca/"
+    },
+    {
+      "name": "Hirako",
+      "email": "hirako2000@gmail.com",
+      "url": "https://github.com/hirako2000"
     }
   ],
   "bugs": {
