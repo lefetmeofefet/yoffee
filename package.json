@@ -5,6 +5,7 @@
   "main": "dist/yoffe.min.js",
   "module": "dist/yoffee.min.js",
   "type": "module",
+  "typings": "typings/declarations.d.ts",
   "scripts": {
     "test": "mocha -r jsdom-global/register",
     "build": "rollup -c",
@@ -51,10 +52,6 @@
     "rollup": "^2.66.1",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-uglify": "^6.0.4",
-    "terser-webpack-plugin": "^2.3.5",
-    "webpack": "^4.42.0",
-    "webpack-cli": "^3.3.11",
-    "webpack-shell-plugin": "^0.5.0"
+    "rollup-plugin-uglify": "^6.0.4"
   }
 }
