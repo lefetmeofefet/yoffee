@@ -49,7 +49,7 @@ class YoffeeElement extends HTMLElement {
         // This is here for when users call `super.connectedCallback()`. Prevent the crash :)
     }
 
-    propUpdatedCallback() {
+    propUpdatedCallback(prop) {
         // This is here for when users call `super.propUpdatedCallback()`. Prevent the crash. :(
     }
 }
@@ -69,7 +69,7 @@ function createYoffeeElement(elementName, element) {
             }
 
             propUpdatedCallback(prop) {
-                super.propUpdatedCallback()
+                super.propUpdatedCallback(prop)
                 this.onPropUpdate && this.onPropUpdate(prop)
             }
 
