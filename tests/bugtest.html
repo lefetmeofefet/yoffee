@@ -1,0 +1,54 @@
+<script type="module">
+    import {html, createYoffeeElement} from "../src/yoffee.js"
+
+    createYoffeeElement("todo-app", () => {
+        const state = {
+            items: [
+                "item1", "item2", "item3"
+            ]
+        }
+        return html(state)`
+        ${() => state.items.map(i => html()`
+        <button onclick=${() => state.items = state.items.filter(item => item !== i)}>${() => i}</button>
+        `)}
+      `
+    })
+
+    // createYoffeeElement("todo-app", () => {
+    //     const state = {
+    //         items: [
+    //             {text: "Item 1"},
+    //             {text: "Item 2"},
+    //             {text: "Item 3"}
+    //         ]
+    //     }
+    //     return html(state)`
+    //     <todo-list items=${() => state.items}
+    //                onfinished=${() => item => state.items = state.items.filter(i => i !== item)}></todo-list>
+    //     <button onclick=${() => state.items = [...state.items, {text: `Item ${state.items.length + 1}`}]}>+</button>
+    //   `
+    // })
+
+    createYoffeeElement("todo-list", props => html(props)`
+        ${() => props.items.map(item => html()`
+          <todo-item onfinished=${() => () => {
+        console.log("Clicked " + JSON.stringify(item))
+        props.onfinished(item)
+    }}>
+            ${() => item.text}
+          </todo-item>
+        `)}
+    `)
+
+    createYoffeeElement("todo-item", (props, element) => html(props)`
+        <div>
+          <button onclick=${() => {
+        console.log(props, element.firstElementChild)
+        props.onfinished()}
+    }>
+            <slot></slot>
+          </button>
+        </div>
+    `)
+</script>
+<todo-app></todo-app>

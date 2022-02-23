@@ -379,7 +379,9 @@ function html(...propsObjects) {
                 propsObjs: propsObjects,
                 expressionCbs: expressionCbs,
                 hash: hashTemplate(strings, expressionCbs),
-                cacheable: true,
+                // cacheable: true,
+                // TODO: CACHING!!! UNDERSTAND THE LIST DELETION BUG SHIT
+                cacheable: false,
             }
             deferredTemplate.createYoffeeTemplate = () => {
                 let t = createTemplate();

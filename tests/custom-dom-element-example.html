@@ -5,25 +5,31 @@
     }
 </style>
 <script type="module">
-    import {HTMElement} from "../src/yoffee.js"
-
-    // customElements.define("my-shit",
-    class FAKAKAKA extends HTMElement {
-        constructor() {
-            super({
-                clicks: 0
-            })
-        }
-
-        render() {
-            console.log("Renderinging")
-            return this.html(this.state)`
-            <button onclick=${() => this.state.clicks += 1}>
-                click me for the ${() => this.state.clicks}th time.
-            </button>
-            `
-        }
+    import {createYoffeeElement, html} from "../src/yoffee.js"
+    window.state = {
+        items: [1,2],
+        items2: [5,6]
     }
-    // )
+
+    createYoffeeElement("some-element", () => {
+        return html(state)`
+        <div>
+
+            <div>
+                <div class="input-with-name">
+                    <div>K_in</div>
+                    <text-input id="kin"></text-input>
+                </div>
+                <div class="input-with-name">
+                    <div>K_out</div>
+                    <text-input id="kout"></text-input>
+                </div>
+                ${() => [1,2,3,4,5]}
+
+            </div>
+
+        </div>
+        `
+    })
 </script>
-<my-shit></my-shit>
+<some-element></some-element>

@@ -66,6 +66,6 @@ declare module "yoffee" {
          * Called each time a property is updated. Attributes are converted to properties, so it is also called when an attribute changes.
          * @param {string} prop The property that changed. Value can be accessed with `props[prop]`
          */
-        propUpdatedCallback(prop): void;
+        propUpdatedCallback(prop: string): void;
     }
 }
