@@ -29,6 +29,12 @@ describe('text node', function () {
                 template: () => html()`${"123"}4${567}`,
                 expected: () => `1234567`
             }, {
+                template: () => html()`${1} 2 ${3}`,
+                expected: () => `1 2 3`
+            }, {
+                template: () => html()`${1} 2 ${3} 4 ${5}`,
+                expected: () => `1 2 3 4 5`
+            }, {
                 template: () => html()`<div>${"text"}</div>`,
                 expected: () => `<div>text</div>`
             }

@@ -385,9 +385,10 @@ class BoundNode {
 
         // The function that will handle both the event and the callback function property
         let handleEvent = (...args) => {
+            // Run the callback
             const result = this.expressions[0].lastResult(...args);
 
-            // In case expression returns another function (user wrote ${() => () => print("stuff)} for example)
+            // In case expression returns another function (user wrote ${() => () => {...}} instead of ${() => {...}})
             if (typeof result === "function") {
                 return result(...args)
             }
@@ -400,10 +401,11 @@ class BoundNode {
         // Setting event listener
         this.domNode.ownerElement.addEventListener(eventName, handleEvent);
 
-        // Adding callback function property as well
+        // Adding callback function property as well: now events are possible in React style, as well as classic events.
+        // Example: <an-element onDestroy=${() => {...}}></an-element>. now an-element can call `this.props.onDestroy()`
         setPropOnPotentialYoffeeElement(this.domNode.ownerElement, listenerName, handleEvent)
 
-        // Remove the attribute
+        // Remove the attribute from the element (so it won't have "on-click=${placeholder}" property)
         this.domNode.ownerElement.removeAttributeNode(this.domNode);
     }
 }
@@ -412,7 +414,7 @@ function setPropOnPotentialYoffeeElement(element, propName, propValue) {
     // First, setting property on element
     element[propName] = propValue
 
-    // Checking if element is initialized or still an UnknownHTMLElement. If initilized, call `updateProp`
+    // Checking if element is initialized or still an UnknownHTMLElement. If initialized, call `updateProp`
     if (element.updateProp) {
         element.updateProp(propName)
     } else {

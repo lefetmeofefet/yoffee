@@ -5,7 +5,7 @@
     }
 </style>
 <script type="module">
-    import htmel from "../src/yoffee.js"
+    import {html} from "../src/yoffee.js"
     // import htmel from "../dist/htmel.min.js"
 
     // window.state = {
@@ -129,20 +129,20 @@
         items: ["A", "b", "c"]
     }
 
-    let element = htmel(state)`
+    let element = html(state)`
     <div>
-        ${() => state.items.map(item => htmel()`<div>${() => item}</div>`)}
+        ${() => state.items.map(item => html()`<div>${() => item}</div>`)}
 <!--        <div style="flex: 1; height: 0; border-bottom: 2px solid #ffffff30;"></div>-->
         ${() => {
         // This should switch between being a htmel template and a list of htmel templates
         if (state.list) {
             return [
-                htmel()`<div>1</div>`,
-                htmel()`<div>2</div>`,
-                htmel()`<div>3</div>`
+                html()`<div>1</div>`,
+                html()`<div>2</div>`,
+                html()`<div>3</div>`
             ]
         } else {
-            return htmel()`<div>Not list</div>`
+            return html()`<div>Not list</div>`
         }
     }}
 

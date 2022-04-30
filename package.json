@@ -1,6 +1,6 @@
 {
   "name": "yoffee",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Minimal HTML one-way binding library",
   "main": "dist/yoffe.min.js",
   "module": "dist/yoffee.min.js",

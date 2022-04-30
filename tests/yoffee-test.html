@@ -3,43 +3,26 @@
     import {html, createYoffeeElement} from "../src/yoffee.js"
 
     window.state = {
-        clicks: 3,
         items: [
-            {id: 1},
-            {id: 2},
+            {id: "a"},
+            {id: "b"},
         ]
     }
 
-    createYoffeeElement("counter-button", () => {
-        // const state = {
-        //     clicks: 0
-        // }
-
-        return html(window.state)`
-            ${() => state.items.map(item => html(item)`
-            <div onclick=${() => {
-                state.items = state.items.filter(i => i.id !== item.id)
-            }}>
-                ${() => item.id}
-            </div>
-            `)}
-        `
+    createYoffeeElement("shitty-list", () => {
+        return html()`${"a"} 2 ${"b"}`
+        // return html(window.state)`
+        //     ${() => state.items.map(item => {
+        //     let lineState = {color: "red"}
+        //     return html(lineState)`
+        //         <div style="color: ${() => lineState.color}"
+        //              onclick=${() => () => lineState.color = lineState.color === "red" ? "blue" : "red"}>
+        //             1 ${() => item.id} 2 ${() => item.id}
+        //         </div>
+        //         `
+        //     })}
+        // `
     })
 
-    let element = html(state)`
-    ${() => new Array(state.clicks).fill(0).map(() => html()`
-        <tr>
-            <td>1 ${() => state.clicks}</td>
-            <td>2 ${() => state.clicks}</td>
-            <td>3 ${() => state.clicks}</td>
-        </tr>
-
-    `)}
-    `
-    document.body.querySelector("#table").appendChild(element)
 </script>
-<table>
-    <tbody id="table"></tbody>
-</table>
-<counter-button></counter-button>
-<!--<counter-button></counter-button>-->
+<shitty-list></shitty-list>

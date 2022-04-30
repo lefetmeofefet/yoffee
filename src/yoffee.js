@@ -58,6 +58,7 @@ function _createContainerElement(html) {
  * Receives a textNode and divider (`textToMakeNode`), and breaks up the textNode into 3 textNodes: before, after and
  * middle, and returns the middle. The middle is the part that's equal to `textToMakeNode` and its value is changed to it.
  * the other parts are inserted into the DOM.
+ * When the same textNode has multiple expressions (1 ${"2"} 3 ${4}) it doesn't trim left so spaces don't get destroyed.
  * Example: node "123" with divider "2" will return insert "1" and "3" into the DOM, and return "2".
  * node "23" with divider "2" will insert "3" into DOM and return "2".
  * @param {Text} textNode
@@ -66,7 +67,11 @@ function _createContainerElement(html) {
  * @private
  */
 function _breakUpTextNodeToSmallerNodes(textNode, textToMakeNode) {
-    let wholeText = textNode.data.trim();
+    let wholeText = textNode.data.trimRight();
+    if (textNode.previousSibling == null) {
+        wholeText = textNode.data.trimLeft();
+    }
+
     let textStartIndex = wholeText.indexOf(textToMakeNode);
     let textEndIndex = textStartIndex + textToMakeNode.length;
 
