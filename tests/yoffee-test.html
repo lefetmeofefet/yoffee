@@ -3,25 +3,16 @@
     import {html, createYoffeeElement} from "../src/yoffee.js"
 
     window.state = {
-        items: [
-            {id: "a"},
-            {id: "b"},
-        ]
+        n: 1
     }
-
+    // BUG!
     createYoffeeElement("shitty-list", () => {
-        return html()`${"a"} 2 ${"b"}`
-        // return html(window.state)`
-        //     ${() => state.items.map(item => {
-        //     let lineState = {color: "red"}
-        //     return html(lineState)`
-        //         <div style="color: ${() => lineState.color}"
-        //              onclick=${() => () => lineState.color = lineState.color === "red" ? "blue" : "red"}>
-        //             1 ${() => item.id} 2 ${() => item.id}
-        //         </div>
-        //         `
-        //     })}
-        // `
+        return html()`
+        ${() => {
+            console.log("Outer template is running")
+            return html(state)`${state.n}`
+        }}
+        `
     })
 
 </script>

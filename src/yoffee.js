@@ -354,27 +354,29 @@ function createBoundDocumentFragment(propsObjects, strings, expressionCbs) {
  * @returns {function(*=, ...[*]): DocumentFragment}
  */
 function html(...propsObjects) {
-    // Set ID for new props objects, and add watcher to prop object
-    propsObjects.forEach(obj => {
-        if (typeof obj !== "object") {
-            throw `YOFFEE: Props object must be an object, got ${typeof propsObject}`
-        }
-        else if (obj == null) {
-            throw `YOFFEE: Props object can't be null`
-        }
-
-        if (obj[NoWatchProperty] == null) {
-            obj[NoWatchProperty] = randomId();
-            watch(
-                obj,
-                onGetListener,
-                onSetListener
-            );
-        }
-    });
-
     // This is the tagged template literal function. It receives template strings and expressions in between.
     return (strings, ...expressionCbs) => {
+        // Set ID for new props objects, and add watcher to prop object.
+        // It's important to add the watcher AFTER the tagged template literal was executed, because otherwise the
+        // attached listener would cause static properties to be bound in parent templates.
+        propsObjects.forEach(obj => {
+            if (typeof obj !== "object") {
+                throw `YOFFEE: Props object must be an object, got ${typeof propsObject}`
+            }
+            else if (obj == null) {
+                throw `YOFFEE: Props object can't be null`
+            }
+
+            if (obj[NoWatchProperty] == null) {
+                obj[NoWatchProperty] = randomId();
+                watch(
+                    obj,
+                    onGetListener,
+                    onSetListener
+                );
+            }
+        });
+
         let createTemplate = () => createBoundDocumentFragment(propsObjects, strings, expressionCbs);
 
         // If we're inside another yoffee template, we don't create a new template because it's possible it should be cached.
