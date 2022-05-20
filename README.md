@@ -11,6 +11,8 @@ _Why should I use this over the likes of react and vue?_
 
 [Official Documentation](https://yoffee.netlify.app/)
 
+[Discord Channel](https://discord.gg/cNSMUXU8)
+
 `yoffee` doesn't force you to use webpack or any other bundler - the code runs
  natively in the browser. Try the following counter button example:
 
