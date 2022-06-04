@@ -1,6 +1,6 @@
 {
   "name": "yoffee",
-  "version": "0.0.13",
+  "version": "1.0.0",
   "description": "Minimal HTML one-way binding library",
   "main": "dist/yoffe.min.js",
   "module": "dist/yoffee.min.js",
@@ -35,6 +35,7 @@
     "type": "git",
     "url": "https://github.com/lefetmeofefet/yoffee"
   },
+  "homepage": "https://yoffee.org",
   "license": "MIT license",
   "keywords": [
     "html",
